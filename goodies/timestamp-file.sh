@@ -107,8 +107,8 @@ fi
 
 info "Generating timestamp on file '$INPUT_FILE', to '$OUTPUT_FILE', using server '$TS_URL'"
 
-# Building the timestamp request with openssl
-openssl ts $OPENSSL_OPTS \
+# Building the timestamp request with libressl
+libressl ts $OPENSSL_OPTS \
     -query -data "$INPUT_FILE" \
     -out "$TMPREQ" || exit_error "Request generation failed"
 
@@ -119,7 +119,7 @@ curl "$TS_URL" $CURL_OPTS \
     --data-binary @$TMPREQ \
     -o "$OUTPUT_FILE" 2>/dev/null || exit_error "Timestamp query failed"
 
-openssl ts -verify -data "$INPUT_FILE" -in "$OUTPUT_FILE" 2>&1 | grep -q "asn1 encoding routines" && exit_error \
+libressl ts -verify -data "$INPUT_FILE" -in "$OUTPUT_FILE" 2>&1 | grep -q "asn1 encoding routines" && exit_error \
 	"Reponse doesn't appear to be a timestamp response"
 
 success "Timestamp of file '$INPUT_FILE' using server '$TS_URL' succeed, ts written to '$OUTPUT_FILE'"
